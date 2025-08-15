@@ -1,18 +1,23 @@
 from db.models import UserModel
 from sqlalchemy.future import select
+from utils.security import hashPassword
 
-""" 搜尋所有 User """
 async def getUser(session):
     query = select(UserModel)
     result = await session.execute(query)
     return result.scalars().all()
 
-
-""" 添加 User """
-async def addUser(name, email, password,session):
-    new_user = UserModel(name=name, email=email, password=password)
-    session.add(new_user)
+async def addUser(name, email, password, session):
+    newUser = UserModel(name=name, email=email, password=hashPassword(password))
+    session.add(newUser)
     await session.commit()
-    await session.refresh(new_user)
-    return new_user
+    await session.refresh(newUser)
+    return newUser
 
+async def getHashByUser(name, session):
+    query = select(UserModel).where(UserModel.name == name)
+    result = await session.execute(query)
+    user = result.scalar_one_or_none()
+    if user:
+        return user.password
+    return None

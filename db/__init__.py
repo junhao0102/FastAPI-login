@@ -19,7 +19,6 @@ async def getSession():
         yield session
     except Exception as e:
         await session.rollback()
-        print(f"資料庫會話錯誤: {e}")
         raise
     finally:
         await session.close()

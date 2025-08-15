@@ -21,6 +21,8 @@ async def get_user(session: AsyncSession = Depends(getSession)):
             "message": "User retrieved successfully",
             "data": user,
         }
+    except HTTPException :
+        raise 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"An error occurred: {str(e)}")
 
@@ -38,6 +40,8 @@ async def create_user(
             "message": "User created successfully",
             "data": new_user,
         }
+    except HTTPException :
+        raise 
     except IntegrityError as e:
         await session.rollback()
         errorMessage = str(e.orig)
